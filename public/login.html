@@ -37,10 +37,12 @@
                 <label for="email" class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">이메일</label>
                 <input type="email" id="email" name="email" required class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com">
             </div>
+            
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">비밀번호</label>
                 <input type="password" id="password" name="password" required class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********">
             </div>
+            
             <div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200">
                     로그인
@@ -54,23 +56,39 @@
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
 
-            if (user) {
-                alert(`환영합니다, ${user.name}님!`);
-                sessionStorage.setItem('loggedInUser', JSON.stringify({ name: user.name, email: user.email }));
-                sessionStorage.setItem('loggedInUserMessageCount', '0');
+            try {
+                // 1. 백엔드 서버의 로그인 API로 요청을 보냅니다.
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
                 
+                const data = await response.json();
+
+                // 2. 백엔드에서 에러를 보냈을 경우
+                if (!response.ok) {
+                    throw new Error(data.error || '알 수 없는 오류가 발생했습니다.');
+                }
+
+                // 3. 로그인 성공 시, 받은 인증 토큰을 브라우저의 localStorage에 저장합니다.
+                // Supabase는 보통 'sb-...' 형태의 키를 사용하지만, 우리는 직접 키를 지정합니다.
+                localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
+
+                // 4. 환영 메시지 후 메인 페이지로 이동합니다.
+                alert(`환영합니다, ${data.user.user_metadata.display_name}님!`);
                 document.body.classList.remove('fade-in');
                 document.body.classList.add('fade-out');
                 setTimeout(() => { window.location.href = 'index.html'; }, 500);
-            } else {
-                alert('이메일 또는 비밀번호를 다시 확인해주세요.');
+
+            } catch (error) {
+                // 5. 로그인 실패 시 에러 메시지를 보여줍니다.
+                alert('로그인 실패: ' + error.message);
             }
         });
 
