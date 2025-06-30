@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Guide AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+    
+    <script>
+        tailwind.config = {
+          darkMode: 'class',
+        }
+    </script>
+
+    <script>
+        // 페이지 깜빡임 방지를 위한 초기 테마 설정
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+    </script>
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .loader {
+            border: 4px solid #e5e7eb; /* light mode loader */
+            border-top-color: #3b82f6; /* blue */
+            border-radius: 50%;
+            width: 24px; height: 24px; animation: spin 1s linear infinite;
+        }
+        .dark .loader {
+            border-color: #4b5563; /* dark mode loader */
+            border-top-color: #3b82f6;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 스크롤바 스타일 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; }
+        .dark ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* 페이지 전환 효과 */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 transition-colors duration-300">
+
+    <div class="flex h-screen">
+        <aside class="hidden md:flex w-2/12 bg-white dark:bg-gray-800 p-2 flex-col border-r border-gray-200 dark:border-gray-700">
+            <div class="flex-shrink-0">
+                <button id="new-chat-button" class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-2 py-1 text-sm rounded-md hover:bg-blue-700 transition-colors duration-200 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                    새 채팅
+                </button>
+                <button id="open-search-button" class="w-full flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold px-2 py-1 text-sm rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                    검색
+                </button>
+            </div>
+            <div class="flex-grow overflow-y-auto pr-1">
+                <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white px-1">채팅 목록</h2>
+                <div id="chat-history-list"></div>
+            </div>
+            
+            <div class="flex-shrink-0 p-2 flex justify-start border-t border-gray-200 dark:border-gray-700">
+                <button id="theme-toggle-button" class="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+                    <svg id="theme-icon-sun" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="theme-icon-moon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </div>
+        </aside>
+
+        <main class="w-full md:w-10/12 flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+            <header class="flex-shrink-0 flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>Computer Guide AI</span>
+                </h1>
+                <div id="auth-container" class="flex items-center gap-4 whitespace-nowrap"></div>
+            </header>
+            <div id="answer-box" class="flex-grow p-6 overflow-y-auto"></div>
+            <div id="loading-spinner" class="hidden p-6 flex-shrink-0">
+                <div class="flex items-center gap-3 bg-gray-200 dark:bg-gray-700 p-4 rounded-lg"><div class="loader"></div><p>답변을 생성 중입니다...</p></div>
+            </div>
+            <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <div class="max-w-4xl mx-auto flex gap-2">
+                    <input type="text" id="question-input" class="flex-grow bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="컴퓨터에 대해 궁금한걸 물어보세요...">
+                    <button id="submit-button" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">전송</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="search-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg p-6">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">채팅 검색</h3>
+            <input type="text" id="search-modal-input" class="w-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 mb-4" placeholder="검색어 입력...">
+            <div id="search-results" class="max-h-64 overflow-y-auto"></div>
+            <button id="close-search-button" class="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg">닫기</button>
+        </div>
+    </div>
+    <div id="login-required-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 text-center">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">로그인 필요</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">모든 기능을 이용하시려면 로그인이 필요합니다.</p>
+            <div class="flex justify-center gap-4">
+                <button id="login-required-close-button" class="bg-gray-500 text-white px-5 py-2 rounded-md hover:bg-gray-600">닫기</button>
+                <a id="go-to-login-link" href="login.html" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700">로그인</a>
+            </div>
+        </div>
+    </div>
+    <div id="limit-exhausted-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 text-center">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">무료 이용권 소진</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">세션 당 5번의 무료 채팅 기회를 모두 사용하셨습니다.<br>계속 이용하시려면 프로모션을 확인해 주세요.</p>
+            <div class="flex justify-center">
+                <button id="limit-close-button" class="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let loggedInUser = null, allChatHistories = {}, currentChatId = null, loggedInUserMessageCount = 0;
+        const MESSAGE_LIMIT = 5;
+
+        const ui = {
+            authContainer: document.getElementById('auth-container'),
+            answerBox: document.getElementById('answer-box'),
+            questionInput: document.getElementById('question-input'),
+            submitButton: document.getElementById('submit-button'),
+            newChatButton: document.getElementById('new-chat-button'),
+            chatHistoryList: document.getElementById('chat-history-list'),
+            loadingSpinner: document.getElementById('loading-spinner'),
+            search: {
+                modal: document.getElementById('search-modal'),
+                openBtn: document.getElementById('open-search-button'),
+                closeBtn: document.getElementById('close-search-button'),
+                input: document.getElementById('search-modal-input'),
+                resultsContainer: document.getElementById('search-results')
+            },
+            loginModal: {
+                container: document.getElementById('login-required-modal'),
+                closeBtn: document.getElementById('login-required-close-button'),
+                loginLink: document.getElementById('go-to-login-link')
+            },
+            limitModal: {
+                container: document.getElementById('limit-exhausted-modal'),
+                closeBtn: document.getElementById('limit-close-button')
+            },
+            theme: {
+                toggleBtn: document.getElementById('theme-toggle-button'),
+                sunIcon: document.getElementById('theme-icon-sun'),
+                moonIcon: document.getElementById('theme-icon-moon'),
+            }
+        };
+
+        function updateThemeUI() {
+            if (document.documentElement.classList.contains('dark')) {
+                ui.theme.sunIcon.style.display = 'block';
+                ui.theme.moonIcon.style.display = 'none';
+            } else {
+                ui.theme.sunIcon.style.display = 'none';
+                ui.theme.moonIcon.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('fade-in');
+            updateThemeUI();
+
+            loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+            allChatHistories = JSON.parse(localStorage.getItem('allChatHistories')) || {};
+            if(loggedInUser) {
+                loggedInUserMessageCount = parseInt(sessionStorage.getItem('loggedInUserMessageCount') || '0');
+            }
+
+            updateLoginStatus();
+            renderChatHistoryList();
+            handleNewChat();
+
+            // --- 이벤트 리스너 ---
+            ui.submitButton.addEventListener('click', handleQuestionSubmit);
+            ui.questionInput.addEventListener('keydown', (e) => e.key === 'Enter' && handleQuestionSubmit());
+            ui.newChatButton.addEventListener('click', handleNewChat);
+            ui.search.openBtn.addEventListener('click', () => ui.search.modal.classList.remove('hidden'));
+            ui.search.closeBtn.addEventListener('click', () => ui.search.modal.classList.add('hidden'));
+            ui.search.input.addEventListener('input', handleSearch);
+            ui.loginModal.closeBtn.addEventListener('click', () => ui.loginModal.container.classList.add('hidden'));
+            ui.limitModal.closeBtn.addEventListener('click', () => ui.limitModal.container.classList.add('hidden'));
+            
+            ui.theme.toggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                updateThemeUI();
+            });
+        });
+
+        function updateLoginStatus() {
+            if (loggedInUser) {
+                ui.authContainer.innerHTML = `<span class="text-gray-900 dark:text-white">${loggedInUser.name}님 환영합니다.</span><button id="logout-button" class="bg-gray-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">로그아웃</button>`;
+                document.getElementById('logout-button').addEventListener('click', () => {
+                    sessionStorage.clear();
+                    window.location.reload();
+                });
+            } else {
+                ui.authContainer.innerHTML = `
+                    <a id="login-link" href="login.html" class="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">로그인</a>
+                    <a id="signup-link" href="signup.html" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700">회원가입</a>
+                `;
+                const addFadeOutEffect = (element) => {
+                    if (!element) return;
+                    element.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const destination = this.href;
+                        document.body.classList.remove('fade-in');
+                        document.body.classList.add('fade-out');
+                        setTimeout(() => { window.location.href = destination; }, 500); 
+                    });
+                };
+                addFadeOutEffect(document.getElementById('login-link'));
+                addFadeOutEffect(document.getElementById('signup-link'));
+                addFadeOutEffect(ui.loginModal.loginLink);
+            }
+        }
+        
+        function renderMessages(messages = []) {
+            if (messages.length === 0) {
+                ui.answerBox.innerHTML = `<div class="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-2xl">무엇을 알려드릴까요?</div>`;
+                return;
+            }
+            ui.answerBox.innerHTML = '';
+            messages.forEach(msg => {
+                const row = document.createElement('div');
+                row.className = 'w-full flex py-1';
+                const bubble = document.createElement('div');
+                bubble.className = `p-4 rounded-lg whitespace-pre-wrap shadow-md`;
+                if (msg.role === 'user') {
+                    row.classList.add('justify-end');
+                    bubble.classList.add('bg-blue-500', 'text-white', 'max-w-2xl');
+                    bubble.textContent = msg.text;
+                } else {
+                    row.classList.add('justify-start');
+                    bubble.classList.add('bg-white', 'dark:bg-gray-700', 'max-w-4xl');
+                    bubble.textContent = msg.text;
+                }
+                row.appendChild(bubble);
+                ui.answerBox.appendChild(row);
+            });
+            ui.answerBox.scrollTop = ui.answerBox.scrollHeight;
+        }
+        
+        function renderChatHistoryList() {
+            const userHistories = loggedInUser ? (allChatHistories[loggedInUser.email] || []) : [];
+            ui.chatHistoryList.innerHTML = '';
+            userHistories.forEach(chat => {
+                const chatElement = document.createElement('div');
+                chatElement.className = 'p-2 my-1 text-sm rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 flex justify-between items-center relative';
+                chatElement.dataset.chatId = chat.id;
+
+                const titleSpan = document.createElement('span');
+                titleSpan.textContent = chat.title;
+                titleSpan.className = 'flex-grow truncate';
+                titleSpan.onclick = () => loadChat(chat.id);
+                chatElement.appendChild(titleSpan);
+
+                const menuButton = document.createElement('button');
+                menuButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>`;
+                menuButton.className = 'flex-shrink-0 p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600';
+                
+                const dropdown = document.createElement('div');
+                dropdown.className = 'hidden absolute right-0 top-8 bg-white dark:bg-gray-600 rounded-md shadow-lg z-10 w-32';
+                dropdown.innerHTML = `<a class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 rounded-t-md share-btn">공유</a><a class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 rename-btn">이름 변경</a><a class="block px-4 py-2 text-sm text-red-500 hover:bg-red-500 hover:text-white rounded-b-md delete-btn">삭제</a>`;
+                
+                menuButton.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.chat-dropdown').forEach(d => d.classList.add('hidden'));
+                    dropdown.classList.toggle('hidden');
+                };
+                dropdown.querySelector('.share-btn').onclick = (e) => { e.stopPropagation(); shareChat(chat.id); dropdown.classList.add('hidden'); };
+                dropdown.querySelector('.rename-btn').onclick = (e) => { e.stopPropagation(); renameChat(chat.id); dropdown.classList.add('hidden'); };
+                dropdown.querySelector('.delete-btn').onclick = (e) => { e.stopPropagation(); deleteChat(chat.id); dropdown.classList.add('hidden'); };
+                dropdown.classList.add('chat-dropdown');
+
+                chatElement.appendChild(menuButton);
+                chatElement.appendChild(dropdown);
+                ui.chatHistoryList.prepend(chatElement);
+            });
+            document.body.addEventListener('click', () => document.querySelectorAll('.chat-dropdown').forEach(d => d.classList.add('hidden')), true);
+        }
+
+        function handleNewChat() {
+            currentChatId = null;
+            renderMessages();
+            document.querySelectorAll('#chat-history-list > div').forEach(el => {
+                el.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-600');
+            });
+        }
+
+        function loadChat(chatId) {
+            const userHistories = loggedInUser ? allChatHistories[loggedInUser.email] || [] : [];
+            const chat = userHistories.find(c => c.id === chatId);
+            if (chat) {
+                currentChatId = chatId;
+                renderMessages(chat.messages);
+                document.querySelectorAll('#chat-history-list > div').forEach(el => {
+                    const isActive = el.dataset.chatId === chatId;
+                    el.classList.toggle('bg-blue-600', isActive);
+                    el.classList.toggle('text-white', isActive);
+                    el.classList.toggle('dark:bg-blue-600', isActive);
+                });
+            }
+        }
+        
+        async function handleQuestionSubmit() {
+            const prompt = ui.questionInput.value.trim();
+            if (!prompt) return;
+
+            if (!loggedInUser) {
+                ui.loginModal.container.classList.remove('hidden');
+                return;
+            }
+
+            if (loggedInUserMessageCount >= MESSAGE_LIMIT) {
+                ui.limitModal.container.classList.remove('hidden');
+                return;
+            }
+            
+            if (ui.answerBox.querySelector('.h-full')) {
+                ui.answerBox.innerHTML = '';
+            }
+
+            const userRow = document.createElement('div');
+            userRow.className = 'w-full flex justify-end py-1';
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'p-4 rounded-lg whitespace-pre-wrap shadow-md bg-blue-500 text-white max-w-2xl';
+            userMessageDiv.textContent = prompt;
+            userRow.appendChild(userMessageDiv);
+            ui.answerBox.appendChild(userRow);
+            
+            ui.answerBox.scrollTop = ui.answerBox.scrollHeight;
+            ui.questionInput.value = '';
+            ui.loadingSpinner.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '서버 응답 오류');
+                }
+
+                const result = await response.json();
+                const generatedText = result.text;
+                
+                loggedInUserMessageCount++;
+                sessionStorage.setItem('loggedInUserMessageCount', loggedInUserMessageCount);
+
+                const aiRow = document.createElement('div');
+                aiRow.className = 'w-full flex justify-start py-1';
+                const modelMessageDiv = document.createElement('div');
+                modelMessageDiv.className = 'p-4 rounded-lg whitespace-pre-wrap shadow-md bg-white dark:bg-gray-700 max-w-4xl';
+                modelMessageDiv.textContent = generatedText;
+                aiRow.appendChild(modelMessageDiv);
+                ui.answerBox.appendChild(aiRow);
+
+                saveChatHistory(prompt, generatedText);
+
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'p-4 my-2 rounded-lg max-w-4xl whitespace-pre-wrap bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 mr-auto';
+                errorDiv.textContent = `오류가 발생했습니다: ${error.message}`;
+                ui.answerBox.appendChild(errorDiv);
+            } finally {
+                ui.loadingSpinner.style.display = 'none';
+                ui.answerBox.scrollTop = ui.answerBox.scrollHeight;
+            }
+        }
+
+        // --- 나머지 헬퍼 함수들 ---
+        function saveChatHistory(prompt, generatedText) {
+            if (!loggedInUser) return;
+            let userHistories = allChatHistories[loggedInUser.email] || [];
+            const userMessage = { role: 'user', text: prompt };
+            const modelMessage = { role: 'model', text: generatedText };
+            if (currentChatId) {
+                const chat = userHistories.find(c => c.id === currentChatId);
+                if (chat) chat.messages.push(userMessage, modelMessage);
+            } else {
+                currentChatId = Date.now().toString();
+                userHistories.push({
+                    id: currentChatId,
+                    title: prompt.length > 25 ? prompt.substring(0, 25) + '...' : prompt,
+                    messages: [userMessage, modelMessage]
+                });
+            }
+            allChatHistories[loggedInUser.email] = userHistories;
+            localStorage.setItem('allChatHistories', JSON.stringify(allChatHistories));
+            renderChatHistoryList();
+            loadChat(currentChatId); // 새 채팅 활성화
+        }
+        function deleteChat(chatId) {
+            if (confirm("정말로 이 채팅을 삭제하시겠습니까?")) {
+                let userHistories = allChatHistories[loggedInUser.email] || [];
+                allChatHistories[loggedInUser.email] = userHistories.filter(c => c.id !== chatId);
+                localStorage.setItem('allChatHistories', JSON.stringify(allChatHistories));
+                if (currentChatId === chatId) {
+                    handleNewChat();
+                }
+                renderChatHistoryList();
+            }
+        }
+        function renameChat(chatId) {
+            const newTitle = prompt("새로운 채팅 제목을 입력하세요:");
+            if (newTitle && newTitle.trim() !== '') {
+                let chat = (allChatHistories[loggedInUser.email] || []).find(c => c.id === chatId);
+                if (chat) {
+                    chat.title = newTitle.trim();
+                    localStorage.setItem('allChatHistories', JSON.stringify(allChatHistories));
+                    renderChatHistoryList();
+                    loadChat(chatId);
+                }
+            }
+        }
+        async function shareChat(chatId) {
+            const chat = (allChatHistories[loggedInUser.email] || []).find(c => c.id === chatId);
+            if (!chat) return;
+            const shareText = `"${chat.title}" 채팅 기록\n\n` + chat.messages.map(m => `${m.role === 'user' ? '나' : 'AI'}: ${m.text}`).join('\n\n');
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: chat.title, text: shareText });
+                } else { throw new Error('Web Share API not supported'); }
+            } catch (err) {
+                navigator.clipboard.writeText(shareText).then(() => alert("채팅 내용이 클립보드에 복사되었습니다."));
+            }
+        }
+        function handleSearch() {
+            const query = ui.search.input.value.toLowerCase();
+            const userHistories = loggedInUser ? allChatHistories[loggedInUser.email] || [] : [];
+            ui.search.resultsContainer.innerHTML = '';
+            if (query && userHistories.length > 0) {
+                const results = userHistories.filter(chat => chat.title.toLowerCase().includes(query));
+                results.forEach(chat => {
+                    const resultEl = document.createElement('div');
+                    resultEl.className = 'p-2 my-1 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700';
+                    resultEl.textContent = chat.title;
+                    resultEl.onclick = () => {
+                        loadChat(chat.id);
+                        ui.search.modal.classList.add('hidden');
+                    };
+                    ui.search.resultsContainer.appendChild(resultEl);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
