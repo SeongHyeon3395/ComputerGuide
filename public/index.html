@@ -123,10 +123,10 @@
             <button id="limit-close-button" class="mt-8 text-sm text-gray-500 hover:underline">나중에 할게요</button>
         </div>
     </div>
-    
+
     <script>
         let loggedInUser = null;
-        let localChatHistories = {};
+        let chatHistories = {}; // 이제 'local'이라는 단어를 빼서 혼동을 줄입니다.
         let currentChatId = null;
 
         const ui = {
@@ -152,7 +152,7 @@
             theme: {
                 toggleBtn: document.getElementById('theme-toggle-button'),
                 sunIcon: document.getElementById('theme-icon-sun'),
-                moonIcon: document.getElementById('theme-icon-moon'),
+                moonIcon: document.getElementById('theme-icon-moon')
             }
         };
 
@@ -188,7 +188,15 @@
             loggedInUser = session ? session.user : null;
             
             if (loggedInUser) {
-                localChatHistories = JSON.parse(localStorage.getItem(loggedInUser.id)) || {};
+                // 30일 지난 채팅 기록을 삭제하는 로직
+                const historyKey = `chat_history_${loggedInUser.id}`;
+                const storedHistories = JSON.parse(localStorage.getItem(historyKey)) || [];
+                const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
+                const validHistories = storedHistories.filter(session => session.timestamp > thirtyDaysAgo);
+                
+                chatHistories[historyKey] = validHistories;
+                localStorage.setItem(historyKey, JSON.stringify(validHistories));
             }
 
             updateLoginStatus();
@@ -280,18 +288,32 @@
         }
         
         function renderChatHistoryList() {
-             const userHistories = loggedInUser ? (localChatHistories[loggedInUser.id] || []) : [];
+             const userHistories = loggedInUser ? (chatHistories[`chat_history_${loggedInUser.id}`] || []) : [];
              ui.chatHistoryList.innerHTML = '';
-            userHistories.forEach(chat => {
+            userHistories.slice().reverse().forEach(session => { // 최신순으로 보여주기 위해 reverse 사용
+                const chat = session.chatData;
+                const chatDate = new Date(session.timestamp);
+                const dateString = `${String(chatDate.getFullYear()).slice(2)}-${String(chatDate.getMonth() + 1).padStart(2, '0')}-${String(chatDate.getDate()).padStart(2, '0')}`;
+                
                 const chatElement = document.createElement('div');
                 chatElement.className = 'p-2 my-1 text-sm rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 flex justify-between items-center relative';
                 chatElement.dataset.chatId = chat.id;
 
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'flex items-center gap-2 flex-grow truncate';
+                contentWrapper.onclick = () => loadChat(chat.id);
+                
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'text-xs text-gray-400 dark:text-gray-500 flex-shrink-0';
+                dateSpan.textContent = dateString;
+
                 const titleSpan = document.createElement('span');
                 titleSpan.textContent = chat.title;
                 titleSpan.className = 'flex-grow truncate';
-                titleSpan.onclick = () => loadChat(chat.id);
-                chatElement.appendChild(titleSpan);
+                
+                contentWrapper.appendChild(dateSpan);
+                contentWrapper.appendChild(titleSpan);
+                chatElement.appendChild(contentWrapper);
 
                 const menuButton = document.createElement('button');
                 menuButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>`;
@@ -309,13 +331,34 @@
 
                 chatElement.appendChild(menuButton);
                 chatElement.appendChild(dropdown);
-                ui.chatHistoryList.prepend(chatElement);
+                ui.chatHistoryList.appendChild(chatElement);
             });
             document.body.addEventListener('click', () => document.querySelectorAll('.chat-dropdown').forEach(d => d.classList.add('hidden')), true);
         }
 
-        function handleNewChat() { /* ... */ }
-        function loadChat(chatId) { /* ... */ }
+        function handleNewChat() {
+            currentChatId = null;
+            renderMessages();
+            document.querySelectorAll('#chat-history-list > div').forEach(el => {
+                el.classList.remove('bg-blue-600', 'text-white', 'dark:bg-blue-600');
+            });
+        }
+
+        function loadChat(chatId) {
+            const historyKey = `chat_history_${loggedInUser.id}`;
+            const userHistories = chatHistories[historyKey] || [];
+            const session = userHistories.find(s => s.chatData.id === chatId);
+            if (session) {
+                currentChatId = chatId;
+                renderMessages(session.chatData.messages);
+                document.querySelectorAll('#chat-history-list > div').forEach(el => {
+                    const isActive = el.dataset.chatId === chatId;
+                    el.classList.toggle('bg-blue-600', isActive);
+                    el.classList.toggle('text-white', isActive);
+                    el.classList.toggle('dark:bg-blue-600', isActive);
+                });
+            }
+        }
         
         async function handleQuestionSubmit() {
             const prompt = ui.questionInput.value.trim();
@@ -327,12 +370,14 @@
                 return;
             }
             
+            if (ui.answerBox.querySelector('.h-full')) {
+                ui.answerBox.innerHTML = '';
+            }
             const userRow = document.createElement('div');
             userRow.className = 'w-full flex justify-end py-1';
             const userMessageDiv = document.createElement('div');
             userMessageDiv.className = 'p-4 rounded-lg whitespace-pre-wrap shadow-md bg-blue-500 text-white max-w-2xl';
             userMessageDiv.textContent = prompt;
-            if (ui.answerBox.querySelector('.h-full')) { ui.answerBox.innerHTML = ''; }
             userRow.appendChild(userMessageDiv);
             ui.answerBox.appendChild(userRow);
             
@@ -352,7 +397,6 @@
 
                 if (response.status === 403) {
                     ui.limitModal.container.classList.remove('hidden');
-                    ui.loadingSpinner.style.display = 'none';
                     userRow.remove(); // 실패했으므로 보냈던 메시지 UI에서 제거
                     return;
                 }
@@ -385,7 +429,78 @@
             }
         }
 
-        // --- 나머지 헬퍼 함수들 (save, delete, rename 등) ---
+        function saveChatHistory(prompt, generatedText) {
+            if (!loggedInUser) return;
+            const historyKey = `chat_history_${loggedInUser.id}`;
+            const userHistories = chatHistories[historyKey] || [];
+            
+            const userMessage = { role: 'user', text: prompt };
+            const modelMessage = { role: 'model', text: generatedText };
+
+            let currentSession = userHistories.find(s => s.chatData.id === currentChatId);
+
+            if (currentSession) {
+                currentSession.chatData.messages.push(userMessage, modelMessage);
+            } else {
+                currentChatId = Date.now().toString();
+                const newChat = {
+                    id: currentChatId,
+                    title: prompt.length > 25 ? prompt.substring(0, 25) + '...' : prompt,
+                    messages: [userMessage, modelMessage]
+                };
+                userHistories.push({ chatData: newChat, timestamp: Date.now() });
+            }
+            chatHistories[historyKey] = userHistories;
+            localStorage.setItem(historyKey, JSON.stringify(userHistories));
+            renderChatHistoryList();
+            loadChat(currentChatId); 
+        }
+
+        function deleteChat(chatId) {
+            if (!loggedInUser || !confirm("정말로 이 채팅을 삭제하시겠습니까?")) return;
+            const historyKey = `chat_history_${loggedInUser.id}`;
+            let userHistories = chatHistories[historyKey] || [];
+            userHistories = userHistories.filter(s => s.chatData.id !== chatId);
+            chatHistories[historyKey] = userHistories;
+            localStorage.setItem(historyKey, JSON.stringify(userHistories));
+            if (currentChatId === chatId) {
+                handleNewChat();
+            }
+            renderChatHistoryList();
+        }
+
+        function renameChat(chatId) {
+            const newTitle = prompt("새로운 채팅 제목을 입력하세요:");
+            if (!loggedInUser || !newTitle || newTitle.trim() === '') return;
+            
+            const historyKey = `chat_history_${loggedInUser.id}`;
+            let userHistories = chatHistories[historyKey] || [];
+            let session = userHistories.find(s => s.chatData.id === chatId);
+
+            if (session) {
+                session.chatData.title = newTitle.trim();
+                localStorage.setItem(historyKey, JSON.stringify(userHistories));
+                renderChatHistoryList();
+                loadChat(chatId);
+            }
+        }
+
+        async function shareChat(chatId) {
+            if (!loggedInUser) return;
+            const historyKey = `chat_history_${loggedInUser.id}`;
+            const session = (chatHistories[historyKey] || []).find(s => s.chatData.id === chatId);
+            if (!session) return;
+            
+            const chat = session.chatData;
+            const shareText = `"${chat.title}" 채팅 기록\n\n` + chat.messages.map(m => `${m.role === 'user' ? '나' : 'AI'}: ${m.text}`).join('\n\n');
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: chat.title, text: shareText });
+                } else { throw new Error('Web Share API not supported'); }
+            } catch (err) {
+                navigator.clipboard.writeText(shareText).then(() => alert("채팅 내용이 클립보드에 복사되었습니다."));
+            }
+        }
     </script>
 </body>
 </html>

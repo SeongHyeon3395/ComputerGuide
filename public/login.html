@@ -69,9 +69,16 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error);
 
+                // ★★★ 이 부분을 수정했습니다! ★★★
+                // data.user -> data.session.user 로 정확한 경로를 찾아갑니다.
+                const displayName = data.session.user.user_metadata.display_name;
+
+                // 토큰 저장
                 localStorage.setItem('supabase.auth.token', JSON.stringify(data.session));
                 
-                alert(`환영합니다, ${data.user.user_metadata.display_name}님!`);
+                // 정상적으로 이름을 찾아서 환영 메시지를 띄웁니다.
+                alert(`환영합니다, ${displayName}님!`);
+                
                 document.body.classList.remove('fade-in');
                 document.body.classList.add('fade-out');
                 setTimeout(() => { window.location.href = 'index.html'; }, 500);
