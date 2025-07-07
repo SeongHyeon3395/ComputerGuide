@@ -16,8 +16,7 @@
     </script>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; }
-        /* 드롭다운 메뉴를 위한 트랜지션 효과 */
-        .dropdown-menu, #mobile-menu {
+        .dropdown-menu {
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
         }
     </style>
@@ -31,12 +30,11 @@
                     <button id="hamburger-button" class="md:hidden mr-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
-                    <a href="#" class="text-xl font-bold text-gray-900 dark:text-white">Computer Guide</a>
+                    <a href="index.html" class="text-xl font-bold text-gray-900 dark:text-white">Computer Guide</a>
                 </div>
 
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="chat.html" class="px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">컴퓨터 가이드 AI</a>
-                    
                     <div class="relative">
                         <button id="build-pc-button" class="desktop-dropdown-button px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex items-center gap-1">
                             <span>내 컴퓨터 만들기</span>
@@ -48,7 +46,6 @@
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">전문가용 컴퓨터 만들기</a>
                         </div>
                     </div>
-
                     <div class="relative">
                         <button id="assembled-pc-button" class="desktop-dropdown-button px-3 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex items-center gap-1">
                             <span>조립 컴퓨터</span>
@@ -61,43 +58,48 @@
                     </div>
                 </div>
 
-                <div id="auth-container" class="flex items-center">
-                    </div>
-            </div>
-
-            <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg opacity-0 -translate-y-2">
-                <div class="p-4 space-y-2">
-                    <a href="chat.html" class="block py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">컴퓨터 가이드 AI</a>
-                    <div>
-                        <button id="mobile-build-pc-button" class="w-full text-left py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex justify-between items-center">
-                            <span>내 컴퓨터 만들기</span>
-                            <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div id="mobile-build-pc-menu" class="hidden pl-4 mt-2 space-y-2">
-                            <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">사무용 컴퓨터 만들기</a>
-                            <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">게이밍 컴퓨터 만들기</a>
-                            <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">전문가용 컴퓨터 만들기</a>
-                        </div>
-                    </div>
-                    <div>
-                        <button id="mobile-assembled-pc-button" class="w-full text-left py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex justify-between items-center">
-                            <span>조립 컴퓨터</span>
-                            <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div id="mobile-assembled-pc-menu" class="hidden pl-4 mt-2 space-y-2">
-                            <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Intel 컴퓨터</a>
-                            <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Ryzen 컴퓨터</a>
-                        </div>
-                    </div>
-                </div>
+                <div id="auth-container" class="flex items-center"></div>
             </div>
         </nav>
     </header>
 
-    <div class="container mx-auto p-6">
-        <h1 class="text-4xl font-bold text-center mt-20 text-gray-900 dark:text-white">나만의 컴퓨터를 만들어보세요</h1>
-        <p class="text-xl text-center mt-4 text-gray-600 dark:text-gray-400">AI와 함께, 또는 직접 부품을 선택하여 최고의 PC를 구성할 수 있습니다.</p>
+    <div id="mobile-menu-container" class="fixed inset-0 transform -translate-x-full transition-transform duration-300 ease-in-out z-30 md:hidden">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60"></div>
+        <div class="relative w-64 h-full bg-white dark:bg-gray-800 p-4 flex flex-col">
+            <button id="mobile-close-button" class="absolute top-4 right-4 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="mt-12 space-y-2">
+                <a href="chat.html" class="block py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-900 dark:text-white">컴퓨터 가이드 AI</a>
+                <div>
+                    <button id="mobile-build-pc-button" class="w-full text-left py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex justify-between items-center text-gray-900 dark:text-white">
+                        <span>내 컴퓨터 만들기</span>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="mobile-build-pc-menu" class="hidden pl-4 mt-2 space-y-2">
+                        <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">사무용 컴퓨터 만들기</a>
+                        <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">게이밍 컴퓨터 만들기</a>
+                        <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">전문가용 컴퓨터 만들기</a>
+                    </div>
+                </div>
+                 <div>
+                    <button id="mobile-assembled-pc-button" class="w-full text-left py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex justify-between items-center text-gray-900 dark:text-white">
+                        <span>조립 컴퓨터</span>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="mobile-assembled-pc-menu" class="hidden pl-4 mt-2 space-y-2">
+                        <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">Intel 컴퓨터</a>
+                        <a href="#" class="block py-2 px-3 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">Ryzen 컴퓨터</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <main class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mt-20 text-gray-900 dark:text-white">메인 페이지 작업중/h1>
+        <p class="text-xl text-center mt-4 text-gray-600 dark:text-gray-400">그냥 뭐.. 아직 업데이트 중입니다.</p>
+    </main>
 
     <script>
         function getAuthToken() {
@@ -119,8 +121,10 @@
             if (loggedInUser) {
                 const displayName = loggedInUser.user_metadata?.display_name || '사용자';
                 authContainer.innerHTML = `
-                    <span class="text-gray-900 dark:text-white text-sm sm:text-base">${displayName}님 환영합니다.</span>
-                    <button id="logout-button" class="ml-4 bg-gray-500 text-white font-semibold px-3 py-1.5 text-sm rounded-lg hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">로그아웃</button>
+                    <div class="flex flex-col sm:flex-row items-end sm:items-center gap-x-4">
+                        <span class="text-gray-900 dark:text-white text-sm text-right">${displayName}님<br class="sm:hidden"> 환영합니다.</span>
+                        <button id="logout-button" class="mt-1 sm:mt-0 bg-gray-500 text-white font-semibold px-3 py-1.5 text-xs rounded-lg hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700">로그아웃</button>
+                    </div>
                 `;
                 document.getElementById('logout-button').addEventListener('click', () => {
                     localStorage.removeItem('supabase.auth.token');
@@ -161,30 +165,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateLoginStatus();
             
-            // 데스크탑 드롭다운 메뉴 설정
+            // 데스크탑 드롭다운 메뉴
             setupDropdown(document.getElementById('build-pc-button'), document.getElementById('build-pc-menu'));
             setupDropdown(document.getElementById('assembled-pc-button'), document.getElementById('assembled-pc-menu'));
 
-            // 모바일 메뉴 토글 설정
+            // 모바일 메뉴
             const hamburgerButton = document.getElementById('hamburger-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            hamburgerButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isHidden = mobileMenu.classList.contains('hidden');
-                if (isHidden) {
-                    mobileMenu.classList.remove('hidden');
-                    setTimeout(() => {
-                        mobileMenu.classList.remove('opacity-0', '-translate-y-2');
-                    }, 10);
-                } else {
-                    mobileMenu.classList.add('opacity-0', '-translate-y-2');
-                    setTimeout(() => {
-                        mobileMenu.classList.add('hidden');
-                    }, 300);
-                }
-            });
+            const mobileMenuContainer = document.getElementById('mobile-menu-container');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const mobileCloseButton = document.getElementById('mobile-close-button');
+
+            const openSidebar = () => mobileMenuContainer.classList.remove('-translate-x-full');
+            const closeSidebar = () => mobileMenuContainer.classList.add('-translate-x-full');
+
+            hamburgerButton.addEventListener('click', openSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+            mobileCloseButton.addEventListener('click', closeSidebar);
             
-            // 모바일 아코디언 메뉴 설정
+            // 모바일 아코디언 메뉴
             setupAccordion(document.getElementById('mobile-build-pc-button'), document.getElementById('mobile-build-pc-menu'));
             setupAccordion(document.getElementById('mobile-assembled-pc-button'), document.getElementById('mobile-assembled-pc-menu'));
 
