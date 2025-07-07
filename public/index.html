@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Computer Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
@@ -25,12 +26,12 @@
     </script>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; }
-        .dropdown-menu {
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        .dropdown-menu, #mobile-menu-container {
+            transition: transform 0.3s ease-out;
         }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-300">
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
     <header class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md sticky top-0 z-20">
         <nav class="container mx-auto px-4 sm:px-6 py-3">
@@ -39,7 +40,12 @@
                     <button id="hamburger-button" class="md:hidden mr-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
-                    <a href="index.html" class="text-xl font-bold text-gray-900 dark:text-white">Computer Guide</a>
+                    <a href="index.html" class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+    <span>Computer Guide</span>
+</a>
                 </div>
 
                 <div class="hidden md:flex items-center space-x-4">
@@ -78,7 +84,7 @@
             <button id="mobile-close-button" class="absolute top-4 right-4 p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <div class="mt-12 space-y-2">
+            <div class="mt-8 space-y-2 flex-grow overflow-y-auto">
                 <a href="chat.html" class="block py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-900 dark:text-white">컴퓨터 가이드 AI</a>
                 <div>
                     <button id="mobile-build-pc-button" class="w-full text-left py-2 px-3 text-base hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md flex justify-between items-center text-gray-900 dark:text-white">
@@ -102,105 +108,30 @@
                     </div>
                 </div>
             </div>
+            <div class="flex-shrink-0 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button id="mobile-theme-toggle-button" class="w-full flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold px-2 py-2 text-sm rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+                    <svg id="mobile-theme-icon-sun" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="mobile-theme-icon-moon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <span id="mobile-theme-text"></span>
+                </button>
+            </div>
         </div>
     </div>
     
     <main>
         <section class="relative text-center py-20 md:py-32 px-4 overflow-hidden">
             <div class="absolute inset-0 bg-white dark:bg-gray-900">
-                 <div class="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:30px_30px] opacity-20 dark:bg-[linear-gradient(to_right,#4b5563_1px,transparent_1px),linear-gradient(to_bottom,#4b5563_1px,transparent_1px)]"></div>
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:30px_30px] opacity-20 dark:bg-[linear-gradient(to_right,#4b5563_1px,transparent_1px),linear-gradient(to_bottom,#4b5563_1px,transparent_1px)]"></div>
             </div>
             <div class="relative z-10 container mx-auto">
-                <h1 class="text-4xl md:text-6xl font-black text-gray-900 dark:text-white leading-tight">
-                    컴퓨터 조립,<br class="md:hidden"> 더 이상 어렵지 않아요
-                </h1>
-                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400">
-                    PC 부품 선택부터 호환성 체크, 최저가 비교까지. Computer Guide AI가 도와드립니다.
-                </p>
-                <div class="mt-8 flex justify-center gap-4">
-                    <a href="chat.html" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">
-                        AI와 함께 견적 짜기 &rarr;
-                    </a>
-                </div>
+                <h1 class="text-4xl md:text-6xl font-black text-gray-900 dark:text-white leading-tight">컴퓨터 조립,<br class="md:hidden"> 더 이상 어렵지 않아요</h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400">PC 부품 선택부터 호환성 체크, 최저가 비교까지. Computer Guide AI가 도와드립니다.</p>
+                <div class="mt-8 flex justify-center gap-4"><a href="chat.html" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">AI와 함께 견적 짜기 &rarr;</a></div>
             </div>
         </section>
-
-        <section class="py-16 sm:py-24 bg-gray-50 dark:bg-black/50">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">당신만을 위한 스마트한 가이드</h2>
-                    <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">복잡한 과정은 AI에게 맡기고, 당신은 즐기기만 하세요.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">💬</div>
-                        <h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">AI 컴퓨터 전문가</h3>
-                        <p class="mt-2 text-base text-gray-600 dark:text-gray-400">어떤 부품을 사야할지 막막하신가요? 24시간 대기 중인 AI 전문가에게 무엇이든 물어보세요.</p>
-                    </div>
-                    <div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                         <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">⚙️</div>
-                        <h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">스마트 견적 도우미</h3>
-                        <p class="mt-2 text-base text-gray-600 dark:text-gray-400">원하는 부품을 담기만 하세요. CPU, 메인보드 등 복잡한 호환성은 저희가 알아서 체크해 드립니다.</p>
-                    </div>
-                    <div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                         <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">₩</div>
-                        <h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">실시간 최저가 비교</h3>
-                        <p class="mt-2 text-base text-gray-600 dark:text-gray-400">선택한 부품들을 가장 저렴하게 구매할 수 있는 쇼핑몰을 찾아, 불필요한 지출을 막아드립니다.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-16 sm:py-24">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">이달의 추천 견적</h2>
-                    <p class="mt-3 text-lg text-gray-600 dark:text-gray-400">어디서부터 시작할지 모르겠다면, 전문가가 구성한 추천 견적을 확인해보세요.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow">
-                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">가성비 게이밍 PC</h3>
-                        <p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">125만원</p>
-                        <ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow">
-                            <li><span class="font-semibold">CPU:</span> Ryzen 5 7500F</li>
-                            <li><span class="font-semibold">GPU:</span> GeForce RTX 4060</li>
-                            <li><span class="font-semibold">RAM:</span> DDR5 16GB (8x2)</li>
-                        </ul>
-                        <a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a>
-                    </div>
-                    <div class="border-2 border-blue-500 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow relative">
-                        <span class="absolute top-0 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">인기</span>
-                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">사무용/인강용 PC</h3>
-                        <p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">70만원</p>
-                        <ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow">
-                            <li><span class="font-semibold">CPU:</span> Intel i5-12400 (내장그래픽)</li>
-                            <li><span class="font-semibold">RAM:</span> DDR4 16GB (8x2)</li>
-                            <li><span class="font-semibold">SSD:</span> NVMe 512GB</li>
-                        </ul>
-                        <a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a>
-                    </div>
-                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow">
-                        <h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">전문가 영상 편집용 PC</h3>
-                        <p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">250만원</p>
-                        <ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow">
-                            <li><span class="font-semibold">CPU:</span> Intel i7-14700K</li>
-                            <li><span class="font-semibold">GPU:</span> GeForce RTX 4070 SUPER</li>
-                            <li><span class="font-semibold">RAM:</span> DDR5 32GB (16x2)</li>
-                        </ul>
-                        <a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-gray-100 dark:bg-gray-900">
-            <div class="container mx-auto px-4 py-16 text-center">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">이제, 당신만의 PC를 만들 시간입니다</h2>
-                <a href="chat.html" class="mt-6 inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">
-                    AI와 함께 시작하기
-                </a>
-            </div>
-        </section>
+        <section class="py-16 sm:py-24 bg-gray-50 dark:bg-black/50"><div class="container mx-auto px-4"><div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">당신만을 위한 스마트한 가이드</h2><p class="mt-3 text-lg text-gray-600 dark:text-gray-400">복잡한 과정은 AI에게 맡기고, 당신은 즐기기만 하세요.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"><div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"><div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">💬</div><h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">AI 컴퓨터 전문가</h3><p class="mt-2 text-base text-gray-600 dark:text-gray-400">어떤 부품을 사야할지 막막하신가요? 24시간 대기 중인 AI 전문가에게 무엇이든 물어보세요.</p></div><div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"><div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">⚙️</div><h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">스마트 견적 도우미</h3><p class="mt-2 text-base text-gray-600 dark:text-gray-400">원하는 부품을 담기만 하세요. CPU, 메인보드 등 복잡한 호환성은 저희가 알아서 체크해 드립니다.</p></div><div class="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg"><div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto text-2xl">₩</div><h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">실시간 최저가 비교</h3><p class="mt-2 text-base text-gray-600 dark:text-gray-400">선택한 부품들을 가장 저렴하게 구매할 수 있는 쇼핑몰을 찾아, 불필요한 지출을 막아드립니다.</p></div></div></div></section>
+        <section class="py-16 sm:py-24"><div class="container mx-auto px-4"><div class="text-center mb-12"><h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">이달의 추천 견적</h2><p class="mt-3 text-lg text-gray-600 dark:text-gray-400">어디서부터 시작할지 모르겠다면, 전문가가 구성한 추천 견적을 확인해보세요.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow"><h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">가성비 게이밍 PC</h3><p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">125만원</p><ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow"><li><span class="font-semibold">CPU:</span> Ryzen 5 7500F</li><li><span class="font-semibold">GPU:</span> GeForce RTX 4060</li><li><span class="font-semibold">RAM:</span> DDR5 16GB (8x2)</li></ul><a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a></div><div class="border-2 border-blue-500 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow relative"><span class="absolute top-0 -translate-y-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">인기</span><h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">사무용/인강용 PC</h3><p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">70만원</p><ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow"><li><span class="font-semibold">CPU:</span> Intel i5-12400 (내장그래픽)</li><li><span class="font-semibold">RAM:</span> DDR4 16GB (8x2)</li><li><span class="font-semibold">SSD:</span> NVMe 512GB</li></ul><a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a></div><div class="border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col hover:shadow-xl transition-shadow"><h3 class="text-lg font-bold text-blue-600 dark:text-blue-400">전문가 영상 편집용 PC</h3><p class="text-3xl font-bold my-3 text-gray-900 dark:text-white">250만원</p><ul class="text-sm space-y-2 text-gray-600 dark:text-gray-400 flex-grow"><li><span class="font-semibold">CPU:</span> Intel i7-14700K</li><li><span class="font-semibold">GPU:</span> GeForce RTX 4070 SUPER</li><li><span class="font-semibold">RAM:</span> DDR5 32GB (16x2)</li></ul><a href="#" class="mt-6 block text-center w-full bg-gray-800 dark:bg-gray-200 text-white dark:text-black font-semibold py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300">이 견적 자세히 보기</a></div></div></div></section>
+        <section class="bg-gray-50 dark:bg-gray-900/50"><div class="container mx-auto px-4 py-16 text-center"><h2 class="text-3xl font-bold text-gray-900 dark:text-white">이제, 당신만의 PC를 만들 시간입니다</h2><a href="chat.html" class="mt-6 inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105">AI와 함께 시작하기</a></div></section>
     </main>
 
     <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
@@ -244,6 +175,23 @@
                 `;
             }
         }
+        
+        function updateThemeUI() {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const mobileThemeText = document.getElementById('mobile-theme-text');
+            const mobileSunIcon = document.getElementById('mobile-theme-icon-sun');
+            const mobileMoonIcon = document.getElementById('mobile-theme-icon-moon');
+
+            if (isDarkMode) {
+                mobileSunIcon.style.display = 'block';
+                mobileMoonIcon.style.display = 'none';
+                mobileThemeText.textContent = '라이트 모드';
+            } else {
+                mobileSunIcon.style.display = 'none';
+                mobileMoonIcon.style.display = 'block';
+                mobileThemeText.textContent = '다크 모드';
+            }
+        }
 
         function setupDropdown(button, menu) {
             button.addEventListener('click', (event) => {
@@ -272,8 +220,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateLoginStatus();
+            updateThemeUI();
             
-            // 데스크탑 드롭다운 메뉴
+            // 데스크탑 드롭다운
             setupDropdown(document.getElementById('build-pc-button'), document.getElementById('build-pc-menu'));
             setupDropdown(document.getElementById('assembled-pc-button'), document.getElementById('assembled-pc-menu'));
 
@@ -290,9 +239,19 @@
             sidebarOverlay.addEventListener('click', closeSidebar);
             mobileCloseButton.addEventListener('click', closeSidebar);
             
-            // 모바일 아코디언 메뉴
+            // 모바일 아코디언
             setupAccordion(document.getElementById('mobile-build-pc-button'), document.getElementById('mobile-build-pc-menu'));
             setupAccordion(document.getElementById('mobile-assembled-pc-button'), document.getElementById('mobile-assembled-pc-menu'));
+            
+            // 테마 변경 버튼 (모바일)
+            const mobileThemeBtn = document.getElementById('mobile-theme-toggle-button');
+            if(mobileThemeBtn) {
+                 mobileThemeBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                    updateThemeUI();
+                });
+            }
 
             window.addEventListener('click', () => {
                 closeAllDropdowns();
