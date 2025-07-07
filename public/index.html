@@ -29,10 +29,6 @@
         .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
         ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
         .dark ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        .fade-out { animation: fadeOut 0.5s ease-in-out forwards; }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 transition-colors duration-300">
@@ -243,23 +239,7 @@
                 document.getElementById('open-plans-button').addEventListener('click', () => {
                     ui.limitModal.container.classList.remove('hidden');
                 });
-            } else {
-                ui.authContainer.innerHTML = `
-                    <a id="login-link" href="login.html" class="text-sm font-semibold border border-gray-400 dark:border-gray-500 px-4 py-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">로그인</a>
-                `;
-                const addFadeOutEffect = (element) => {
-                    if (!element) return;
-                    element.addEventListener('click', function(event) {
-                        event.preventDefault();
-                        const destination = this.href;
-                        document.body.classList.remove('fade-in');
-                        document.body.classList.add('fade-out');
-                        setTimeout(() => { window.location.href = destination; }, 500); 
-                    });
-                };
-                addFadeOutEffect(document.getElementById('login-link'));
-                addFadeOutEffect(ui.loginModal.loginLink);
-            }
+            }   
         }
         
         function renderMessages(messages = []) {
