@@ -20,7 +20,9 @@ app.post('/api/auth/signup', async (req, res) => {
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email,
         password: password,
-        options: { data: { display_name: name } }
+        options: {
+            data: { display_name: name }
+        }
     });
 
     if (authError) return res.status(400).json({ error: authError.message });
@@ -31,7 +33,11 @@ app.post('/api/auth/signup', async (req, res) => {
         id: authData.user.id, email: email, display_name: name, plan_type: 'free', chat_credits: 5
     });
 
-    if (profileError) return res.status(400).json({ error: profileError.message });
+    if (profileError) {
+        // 만약 프로필 생성에 실패하면, 방금 만든 auth.users의 유저도 삭제해주는 것이 좋습니다 (롤백).
+        await supabase.auth.admin.deleteUser(authData.user.id);
+        return res.status(400).json({ error: profileError.message });
+    }
 
     res.status(200).json({ user: authData.user });
 });
